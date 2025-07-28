@@ -1,0 +1,82 @@
+package chess.pieces;
+
+import boardgame.Board;
+import boardgame.Position;
+import chess.ChessPiece;
+import chess.Color;
+
+public class Pawn extends ChessPiece {
+
+	public Pawn(Board board, Color color) {
+		super(board, color);
+	}
+	
+	@Override
+	public String toString() {
+		return "P";
+	}
+
+	@Override
+	public boolean[][] possibleMoves() {
+		boolean[][] mat = new boolean[getBoard().getRows()][getBoard().getColumns()];
+		
+		Position p = new Position(0, 0);
+		
+		if (getColor() == Color.WHITE) {
+			
+			// verificando acima da peça
+			p.setValues(position.getRow() - 1, position.getColumn());
+			if (getBoard().positionExists(p) && !getBoard().thereIsAPiece(p)) {
+				mat[p.getRow()][p.getColumn()] = true;
+				
+				// verificando se pode andar duas casas se a peça não se movimentou nenhuma vez.
+				// Obs: é necessário ter a casa anterior válida para movimentação, por isso eu inseri 
+				// essa condição no if da primeira casa.
+				p.setValues(position.getRow() - 2, position.getColumn());
+				if (getBoard().positionExists(p) && !getBoard().thereIsAPiece(p) && getMoveCount() == 0) {
+					mat[p.getRow()][p.getColumn()] = true;
+				}
+			}
+			
+			// verificando a diagonal superior esquerda da peça
+			p.setValues(position.getRow() - 1, position.getColumn() - 1);
+			if (getBoard().positionExists(p) && isThereOpponentPiece(p)) {
+				mat[p.getRow()][p.getColumn()] = true;
+			}
+			
+			// verificando a diagonal superior direita da peça
+			p.setValues(position.getRow() - 1, position.getColumn() + 1);
+			if (getBoard().positionExists(p) && isThereOpponentPiece(p)) {
+				mat[p.getRow()][p.getColumn()] = true;
+			}
+		}
+		else {
+			// verificando abaixo da peça
+			p.setValues(position.getRow() + 1, position.getColumn());
+			if (getBoard().positionExists(p) && !getBoard().thereIsAPiece(p)) {
+				mat[p.getRow()][p.getColumn()] = true;
+				
+				// verificando se pode andar duas casas se a peça não se movimentou nenhuma vez
+				// Obs: é necessário ter a casa anterior válida para movimentação, por isso eu inseri 
+				// essa condição no if da primeira casa.
+				p.setValues(position.getRow() + 2, position.getColumn());
+				if (getBoard().positionExists(p) && !getBoard().thereIsAPiece(p) && getMoveCount() == 0) {
+					mat[p.getRow()][p.getColumn()] = true;
+				}
+			}
+			
+			// verificando a diagonal inferior esquerda da peça
+			p.setValues(position.getRow() + 1, position.getColumn() - 1);
+			if (getBoard().positionExists(p) && isThereOpponentPiece(p)) {
+				mat[p.getRow()][p.getColumn()] = true;
+			}
+			
+			// verificando a diagonal inferior direita da peça
+			p.setValues(position.getRow() + 1, position.getColumn() + 1);
+			if (getBoard().positionExists(p) && isThereOpponentPiece(p)) {
+				mat[p.getRow()][p.getColumn()] = true;
+			}
+		}
+		return mat;
+	}
+}
