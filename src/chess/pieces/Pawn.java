@@ -2,18 +2,35 @@ package chess.pieces;
 
 import boardgame.Board;
 import boardgame.Position;
+import chess.ChessMatch;
 import chess.ChessPiece;
 import chess.Color;
 
 public class Pawn extends ChessPiece {
-
-	public Pawn(Board board, Color color) {
+	
+	private ChessMatch chessMatch;
+	
+	public Pawn(Board board, Color color, ChessMatch chessMatch) {
 		super(board, color);
+		this.chessMatch = chessMatch;
 	}
 	
 	@Override
 	public String toString() {
 		return "P";
+	}
+	
+	private boolean testEnPassant(String direction, Color pawnColor) {
+		int EnPassantRow = (pawnColor == Color.WHITE) ? 3 : 4;
+		
+		Position opponentPos;
+		if (direction.equals("left")) {
+			opponentPos = new Position(position.getRow(), position.getColumn() - 1);
+		}
+		else {
+			opponentPos = new Position(position.getRow(), position.getColumn() + 1);
+		}
+		return position.getRow() == EnPassantRow && getBoard().positionExists(opponentPos) && isThereOpponentPiece(opponentPos) && getBoard().piece(opponentPos) == chessMatch.getEnPassantVulnerable();
 	}
 
 	@Override
@@ -38,15 +55,15 @@ public class Pawn extends ChessPiece {
 				}
 			}
 			
-			// verificando a diagonal superior esquerda da peça
+			// verificando a diagonal superior esquerda da peça ou se é possível fazer o Special Move - En Passant
 			p.setValues(position.getRow() - 1, position.getColumn() - 1);
-			if (getBoard().positionExists(p) && isThereOpponentPiece(p)) {
+			if ((getBoard().positionExists(p) && isThereOpponentPiece(p)) || testEnPassant("left", getColor())) {
 				mat[p.getRow()][p.getColumn()] = true;
 			}
 			
-			// verificando a diagonal superior direita da peça
+			// verificando a diagonal superior direita da peça ou se é possível fazer o Special Move - En Passant
 			p.setValues(position.getRow() - 1, position.getColumn() + 1);
-			if (getBoard().positionExists(p) && isThereOpponentPiece(p)) {
+			if ((getBoard().positionExists(p) && isThereOpponentPiece(p)) || testEnPassant("right", getColor())) {
 				mat[p.getRow()][p.getColumn()] = true;
 			}
 		}
@@ -65,15 +82,15 @@ public class Pawn extends ChessPiece {
 				}
 			}
 			
-			// verificando a diagonal inferior esquerda da peça
+			// verificando a diagonal inferior esquerda da peça ou se é possível fazer o Special Move - En Passant
 			p.setValues(position.getRow() + 1, position.getColumn() - 1);
-			if (getBoard().positionExists(p) && isThereOpponentPiece(p)) {
+			if ((getBoard().positionExists(p) && isThereOpponentPiece(p)) || testEnPassant("left", getColor())) {
 				mat[p.getRow()][p.getColumn()] = true;
 			}
 			
-			// verificando a diagonal inferior direita da peça
+			// verificando a diagonal inferior direita da peça ou se é possível fazer o Special Move - En Passant
 			p.setValues(position.getRow() + 1, position.getColumn() + 1);
-			if (getBoard().positionExists(p) && isThereOpponentPiece(p)) {
+			if ((getBoard().positionExists(p) && isThereOpponentPiece(p)) || testEnPassant("right", getColor())) {
 				mat[p.getRow()][p.getColumn()] = true;
 			}
 		}
